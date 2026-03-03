@@ -5,6 +5,7 @@ public class MenuController : MonoBehaviour
 {
     // Tên của Scene game chính (phải khớp chính xác với tên file scene)
     [SerializeField] private string gameSceneName = "subway";
+    [SerializeField] private GameObject settingsPanel;
 
     void Update()
     {
@@ -19,6 +20,18 @@ public class MenuController : MonoBehaviour
         {
             QuitGame();
         }
+    }
+
+    // Hàm để mở bảng
+    public void OpenSettings()
+    {
+        settingsPanel.SetActive(true);
+    }
+
+    // Hàm để đóng bảng (gán cho nút Close hoặc dấu X sau này)
+    public void CloseSettings()
+    {
+        settingsPanel.SetActive(false);
     }
 
     // Hàm gọi khi nhấn nút Play hoặc phím Space/Enter
