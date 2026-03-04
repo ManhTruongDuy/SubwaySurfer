@@ -1,36 +1,45 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
     [SerializeField] private string gameSceneName = "subway";
     [SerializeField] private GameObject settingsPanel;
 
-    [Header("Music Settings")] // Phân nhóm cho dễ nhìn trong Inspector
-    public AudioSource bgMusicSource; // Nguồn nhạc nền
-    public Slider musicSlider;        // Thanh kéo âm lượng
+    [Header("Music Settings")]
+    public AudioSource bgMusicSource;
+    public Slider musicSlider;
     public Image musicIconDisplay;
     public Sprite musicOnSprite;
     public Sprite musicOffSprite;
 
-    [Header("Sound Settings")] // Thêm các biến mới cho Sound
+    [Header("Sound Settings")]
     public Image soundIconDisplay;
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
 
     [Header("Transition")]
-    public Animator cloudAnimator; // Kéo Transition_Clouds vào đây
+    public Animator cloudAnimator;
 
+    [SerializeField] private GameObject shopPanel;
 
+    [Header("Death Menu UI")]
+    public GameObject deathMenuPanel;
+    public TextMeshProUGUI txtCurrentScore;
+    public TextMeshProUGUI txtHighScore;
+    public TextMeshProUGUI txtCoin;
+    public GameObject btnDoubleUp; // Kéo nút Watch Video vào đây để ẩn sau khi xem
+
+    private int currentCoins; // Biến lưu số coin tạm thời để x2
 
     void Start()
     {
-        // Khi bắt đầu, đặt giá trị Slider khớp với âm lượng hiện tại
         if (bgMusicSource != null && musicSlider != null)
         {
             musicSlider.value = bgMusicSource.volume;
-            // Lắng nghe sự kiện kéo thanh trượt
             musicSlider.onValueChanged.AddListener(SetMusicVolume);
         }
     }
@@ -46,21 +55,65 @@ public class MenuController : MonoBehaviour
         {
             QuitGame();
         }
+
+        // --- TEST NHANH ---
+        // Nhấn phím K để giả lập nhân vật chết ngay lập tức
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            // Truyền thử 1234 điểm và 50 coin để test
+            ShowDeathMenu(1234, 50); 
+        }
     }
 
-    public void OpenSettings()
+    public void ShowDeathMenu(int score, int coins)
     {
-        settingsPanel.SetActive(true);
+        currentCoins = coins; // Lưu lại số coin ván này
+        deathMenuPanel.SetActive(true);
+        if (btnDoubleUp != null) btnDoubleUp.SetActive(true); // Reset nút x2 hiện lên
+
+        txtCurrentScore.text = score.ToString();
+        txtCoin.text = currentCoins.ToString();
+
+        int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (score > savedHighScore)
+        {
+            savedHighScore = score;
+            PlayerPrefs.SetInt("HighScore", savedHighScore);
+        }
+        txtHighScore.text = savedHighScore.ToString();
+
+        Time.timeScale = 0f; // Dừng game
     }
 
-    public void CloseSettings()
+    // --- TÍNH NĂNG MỚI: X2 COIN GIẢ LẬP ---
+    public void WatchAdDoubleCoin()
     {
-        settingsPanel.SetActive(false);
+        StartCoroutine(SimulateAdRoutine());
     }
 
- 
+    IEnumerator SimulateAdRoutine()
+    {
+        Debug.Log("Đang xem quảng cáo...");
+        // Dùng WaitForSecondsRealtime vì Time.timeScale đang bằng 0
+        yield return new WaitForSecondsRealtime(2.0f);
 
-    // Hàm điều khiển Icon Sound (Hàm mới)
+        currentCoins *= 2; // Nhân đôi số tiền
+        txtCoin.text = currentCoins.ToString();
+
+        if (btnDoubleUp != null) btnDoubleUp.SetActive(false); // Xem xong thì ẩn nút
+        Debug.Log("Đã nhân đôi Coin!");
+    }
+
+    // --- TÍNH NĂNG MỚI: CHƠI LẠI (RESTART) ---
+    public void RestartGame()
+    {
+        Time.timeScale = 1f; // Trả lại thời gian bình thường
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Load lại chính cảnh hiện tại
+    }
+
+    public void OpenSettings() { settingsPanel.SetActive(true); }
+    public void CloseSettings() { settingsPanel.SetActive(false); }
+
     public void OnSoundToggle(bool isOn)
     {
         if (soundIconDisplay != null)
@@ -76,24 +129,24 @@ public class MenuController : MonoBehaviour
     {
         if (musicIconDisplay != null)
             musicIconDisplay.sprite = isOn ? musicOnSprite : musicOffSprite;
-
-        if (bgMusicSource != null) bgMusicSource.mute = !isOn; // Tắt tiếng khi icon là Off
+        if (bgMusicSource != null) bgMusicSource.mute = !isOn;
     }
+
     public void PlayGame()
     {
-        // 1. Chạy Animation xòe mây
-        if (cloudAnimator != null)
-        {
-            cloudAnimator.Play("Cloud_Open");
-        }
-
-        // 2. Đợi mây xòe xong (khoảng 1 giây) rồi mới load cảnh game
+        if (cloudAnimator != null) cloudAnimator.Play("Cloud_Open");
         Invoke("LoadSubwayScene", 1.0f);
     }
 
-    void LoadSubwayScene()
+    void LoadSubwayScene() { SceneManager.LoadScene(gameSceneName); }
+
+    public void OpenShop() { if (shopPanel != null) shopPanel.SetActive(true); }
+    public void CloseShop() { if (shopPanel != null) shopPanel.SetActive(false); }
+
+    public void GoBackToMenu()
     {
-        SceneManager.LoadScene(gameSceneName);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Menu");
     }
 
     public void QuitGame()
