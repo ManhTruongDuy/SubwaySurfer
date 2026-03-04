@@ -6,17 +6,35 @@ using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
+    [Header("Scene Settings")]
     [SerializeField] private string gameSceneName = "subway";
+    [SerializeField] private string menuSceneName = "Menu";
+
+    [Header("Panels")]
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject shopPanel;
+    [SerializeField] private GameObject deathMenuPanel;
 
-    [Header("Music Settings")]
-    public AudioSource bgMusicSource;
-    public Slider musicSlider;
-    public Image musicIconDisplay;
-    public Sprite musicOnSprite;
-    public Sprite musicOffSprite;
+    [Header("Currency UI (Main Screen)")]
+    public TextMeshProUGUI txtTotalCoinsDisplay;
+    public TextMeshProUGUI txtTotalDiamondsDisplay;
 
-    [Header("Sound Settings")]
+    [Header("Death Menu UI")]
+    public TextMeshProUGUI txtRunScore;
+    public TextMeshProUGUI txtHighScore;
+    public TextMeshProUGUI txtRunCoin;
+    public GameObject btnDoubleUp;
+
+    [Header("Audio Settings UI")]
+    // --- KHÔNG CẦN AudioSource Ở ĐÂY NỮA VÌ MusicManager LO RỒI ---
+    // public AudioSource bgMusicSource;  <-- Đã xóa dòng này
+
+    public Slider musicSlider;       // Thanh kéo to nhỏ
+    public Image musicIconDisplay;   // Ảnh nút nhạc
+    public Sprite musicOnSprite;     // Hình nốt nhạc đẹp
+    public Sprite musicOffSprite;    // Hình nốt nhạc tắt
+
+    // Nếu Hải muốn làm cả nút Sound (Tiếng động FX) thì giữ lại, không thì xóa
     public Image soundIconDisplay;
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
@@ -24,68 +42,94 @@ public class MenuController : MonoBehaviour
     [Header("Transition")]
     public Animator cloudAnimator;
 
-    [SerializeField] private GameObject shopPanel;
-
-    [Header("Death Menu UI")]
-    public GameObject deathMenuPanel;
-    public TextMeshProUGUI txtCurrentScore;
-    public TextMeshProUGUI txtHighScore;
-    public TextMeshProUGUI txtCoin;
-    public GameObject btnDoubleUp; // Kéo nút Watch Video vào đây để ẩn sau khi xem
-
-    private int currentCoins; // Biến lưu số coin tạm thời để x2
+    private int coinsCollectedInRun;
 
     void Start()
     {
-        if (bgMusicSource != null && musicSlider != null)
+        // 1. Cập nhật Tiền
+        UpdateTotalCurrencyUI();
+
+        // 2. Cập nhật UI Âm thanh theo trạng thái của MusicManager
+        // Kiểm tra xem MusicManager đã tồn tại chưa để tránh lỗi
+        if (MusicManager.Instance != null)
         {
-            musicSlider.value = bgMusicSource.volume;
-            musicSlider.onValueChanged.AddListener(SetMusicVolume);
+            // Cập nhật thanh trượt đúng với âm lượng hiện tại
+            if (musicSlider != null)
+            {
+                musicSlider.value = MusicManager.Instance.musicSource.volume;
+                musicSlider.onValueChanged.AddListener(SetMusicVolume);
+            }
+
+            // Cập nhật hình ảnh nút (Bật hay Tắt)
+            UpdateMusicIconUI();
         }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
-        {
-            PlayGame();
-        }
+        // Các phím tắt test game
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) PlayGame();
+        if (Input.GetKeyDown(KeyCode.Escape)) QuitGame();
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Cheat tiền test shop
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            QuitGame();
-        }
-
-        // --- TEST NHANH ---
-        // Nhấn phím K để giả lập nhân vật chết ngay lập tức
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            // Truyền thử 1234 điểm và 50 coin để test
-            ShowDeathMenu(1234, 50); 
+            PlayerDataManager.Instance.AddDiamonds(100);
+            UpdateTotalCurrencyUI();
         }
     }
 
+    // --- CÁC HÀM XỬ LÝ ÂM THANH MỚI (GỌI SANG MUSIC MANAGER) ---
+
+    // Hàm này gán vào nút Bấm Nhạc (Button OnClick)
+    public void OnMusicToggleClick()
+    {
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.ToggleMusic(); // Gọi Manager tắt/bật
+            UpdateMusicIconUI();                 // Cập nhật lại hình cái nút
+        }
+    }
+
+    // Hàm này gán vào Slider (OnValueChanged)
+    public void SetMusicVolume(float volume)
+    {
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.SetVolume(volume);
+        }
+    }
+
+    // Hàm phụ để đổi hình cái nút (Private)
+    private void UpdateMusicIconUI()
+    {
+        if (musicIconDisplay != null && MusicManager.Instance != null)
+        {
+            // Nếu nhạc đang bật -> dùng hình On, ngược lại dùng hình Off
+            musicIconDisplay.sprite = MusicManager.Instance.IsMusicOn() ? musicOnSprite : musicOffSprite;
+        }
+    }
+
+    // -----------------------------------------------------------
+
+    // --- CÁC HÀM LOGIC GAME / DEATH MENU GIỮ NGUYÊN ---
     public void ShowDeathMenu(int score, int coins)
     {
-        currentCoins = coins; // Lưu lại số coin ván này
+        coinsCollectedInRun = coins;
+        PlayerDataManager.Instance.CheckAndSaveHighScore(score);
+        PlayerDataManager.Instance.AddCoins(coinsCollectedInRun);
+
         deathMenuPanel.SetActive(true);
-        if (btnDoubleUp != null) btnDoubleUp.SetActive(true); // Reset nút x2 hiện lên
+        if (btnDoubleUp != null) btnDoubleUp.SetActive(true);
 
-        txtCurrentScore.text = score.ToString();
-        txtCoin.text = currentCoins.ToString();
+        txtRunScore.text = score.ToString();
+        txtRunCoin.text = coinsCollectedInRun.ToString();
+        txtHighScore.text = PlayerDataManager.Instance.GetHighScore().ToString();
 
-        int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
-        if (score > savedHighScore)
-        {
-            savedHighScore = score;
-            PlayerPrefs.SetInt("HighScore", savedHighScore);
-        }
-        txtHighScore.text = savedHighScore.ToString();
-
-        Time.timeScale = 0f; // Dừng game
+        UpdateTotalCurrencyUI();
+        Time.timeScale = 0f;
     }
 
-    // --- TÍNH NĂNG MỚI: X2 COIN GIẢ LẬP ---
     public void WatchAdDoubleCoin()
     {
         StartCoroutine(SimulateAdRoutine());
@@ -94,64 +138,43 @@ public class MenuController : MonoBehaviour
     IEnumerator SimulateAdRoutine()
     {
         Debug.Log("Đang xem quảng cáo...");
-        // Dùng WaitForSecondsRealtime vì Time.timeScale đang bằng 0
         yield return new WaitForSecondsRealtime(2.0f);
-
-        currentCoins *= 2; // Nhân đôi số tiền
-        txtCoin.text = currentCoins.ToString();
-
-        if (btnDoubleUp != null) btnDoubleUp.SetActive(false); // Xem xong thì ẩn nút
-        Debug.Log("Đã nhân đôi Coin!");
+        PlayerDataManager.Instance.AddCoins(coinsCollectedInRun);
+        txtRunCoin.text = (coinsCollectedInRun * 2).ToString();
+        UpdateTotalCurrencyUI();
+        if (btnDoubleUp != null) btnDoubleUp.SetActive(false);
     }
 
-    // --- TÍNH NĂNG MỚI: CHƠI LẠI (RESTART) ---
+    public void UpdateTotalCurrencyUI()
+    {
+        if (txtTotalCoinsDisplay != null)
+            txtTotalCoinsDisplay.text = PlayerDataManager.Instance.GetTotalCoins().ToString("N0");
+        if (txtTotalDiamondsDisplay != null)
+            txtTotalDiamondsDisplay.text = PlayerDataManager.Instance.GetTotalDiamonds().ToString("N0");
+    }
+
     public void RestartGame()
     {
-        Time.timeScale = 1f; // Trả lại thời gian bình thường
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Load lại chính cảnh hiện tại
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoBackToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(menuSceneName);
     }
 
     public void OpenSettings() { settingsPanel.SetActive(true); }
     public void CloseSettings() { settingsPanel.SetActive(false); }
-
-    public void OnSoundToggle(bool isOn)
-    {
-        if (soundIconDisplay != null)
-            soundIconDisplay.sprite = isOn ? soundOnSprite : soundOffSprite;
-    }
-
-    public void SetMusicVolume(float volume)
-    {
-        if (bgMusicSource != null) bgMusicSource.volume = volume;
-    }
-
-    public void OnMusicToggle(bool isOn)
-    {
-        if (musicIconDisplay != null)
-            musicIconDisplay.sprite = isOn ? musicOnSprite : musicOffSprite;
-        if (bgMusicSource != null) bgMusicSource.mute = !isOn;
-    }
+    public void OpenShop() { SceneManager.LoadScene("Shop"); }
+    public void CloseShop() { if (shopPanel != null) shopPanel.SetActive(false); }
 
     public void PlayGame()
     {
         if (cloudAnimator != null) cloudAnimator.Play("Cloud_Open");
         Invoke("LoadSubwayScene", 1.0f);
     }
-
     void LoadSubwayScene() { SceneManager.LoadScene(gameSceneName); }
-
-    public void OpenShop() { if (shopPanel != null) shopPanel.SetActive(true); }
-    public void CloseShop() { if (shopPanel != null) shopPanel.SetActive(false); }
-
-    public void GoBackToMenu()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("Menu");
-    }
-
-    public void QuitGame()
-    {
-        Debug.Log("Đã thoát game");
-        Application.Quit();
-    }
+    public void QuitGame() { Application.Quit(); }
 }

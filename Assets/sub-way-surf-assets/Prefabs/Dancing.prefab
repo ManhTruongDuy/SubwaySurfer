@@ -53,6 +53,10 @@ PrefabInstance:
       value: Dancing
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: f7d6700f0e0b0d64c8c8a568a1c8c496, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 88acd603704776a47b46b9b4e1692ba5, type: 2}
+    - target: {fileID: 5866666021909216657, guid: f7d6700f0e0b0d64c8c8a568a1c8c496, type: 3}
       propertyPath: m_AnimatePhysics
       value: 0
       objectReference: {fileID: 0}
