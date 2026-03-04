@@ -19,6 +19,11 @@ public class MenuController : MonoBehaviour
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
 
+    [Header("Transition")]
+    public Animator cloudAnimator; // Kéo Transition_Clouds vào đây
+
+
+
     void Start()
     {
         // Khi bắt đầu, đặt giá trị Slider khớp với âm lượng hiện tại
@@ -76,7 +81,18 @@ public class MenuController : MonoBehaviour
     }
     public void PlayGame()
     {
-        Debug.Log("Loading Scene: " + gameSceneName);
+        // 1. Chạy Animation xòe mây
+        if (cloudAnimator != null)
+        {
+            cloudAnimator.Play("Cloud_Open");
+        }
+
+        // 2. Đợi mây xòe xong (khoảng 1 giây) rồi mới load cảnh game
+        Invoke("LoadSubwayScene", 1.0f);
+    }
+
+    void LoadSubwayScene()
+    {
         SceneManager.LoadScene(gameSceneName);
     }
 
