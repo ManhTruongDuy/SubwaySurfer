@@ -1,124 +1,200 @@
 ﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class ShopManager : MonoBehaviour
 {
-    [Header("Data & Transform")]
-    public CharacterShopData[] allCharacters; // Danh sách Data (Hải mới có 1 con thì kéo 1 con vào)
-    public Transform spawnPoint;              // Điểm đứng trên bục
+    [Header("Data")]
+    public CharacterShopData[] allCharacters;
+    public Transform spawnPoint;
 
-    [Header("UI Reference")]
-    public TextMeshProUGUI btnText;           // Chữ trên nút (BUY / SELECT / SELECTED)
-    public TextMeshProUGUI priceText;         // Chữ giá tiền
-    public Button buyButton;                  // Cái nút bấm để đổi màu nếu cần
+    [Header("UI Tabs (Chuyển trang)")]
+    public GameObject characterShopPanel; // Kéo cái Panel chứa nút Next/Prev/Buy vào đây
+    public GameObject diamondShopPanel;   // Kéo cái trang Shop nạp tiền vào đây
+    public GameObject character3DModelParent; // Kéo cái SpawnPoint vào đây (để ẩn hiện 3D)
+
+    [Header("UI Buying (Nút mua)")]
+    public Button btnBuyGold;         // Kéo nút Mua Vàng
+    public TextMeshProUGUI txtGoldPrice; // Chữ giá tiền trên nút Vàng
+
+    public Button btnBuyDiamond;      // Kéo nút Mua Kim Cương
+    public TextMeshProUGUI txtDiamondPrice; // Chữ giá tiền trên nút KC
+
+    public Button btnEquip;           // Tạo thêm 1 nút riêng chỉ hiện chữ "EQUIP/SELECTED"
+    public TextMeshProUGUI txtEquip;  // Chữ trên nút Equip
 
     private int currentIndex = 0;
     private GameObject currentModel;
 
+    [Header("UI Global (Góc màn hình)")]
+    public TextMeshProUGUI txtTotalCoins;    // Kéo cái số tiền Vàng ở góc vào đây
+    public TextMeshProUGUI txtTotalDiamonds; // Kéo cái số Kim cương ở góc vào đây
+
     void Start()
     {
-        // Khi mới vào Shop, luôn hiện nhân vật đang được chọn (Selected)
-        // Tìm xem nhân vật nào đang Selected để hiện nó đầu tiên
-        string selectedName = PlayerDataManager.Instance.GetSelectedCharacter();
-        int indexToShow = 0;
-
-        for (int i = 0; i < allCharacters.Length; i++)
-        {
-            if (allCharacters[i].characterName == selectedName)
-            {
-                indexToShow = i;
-                break;
-            }
-        }
-
-        UpdateShopUI(indexToShow);
+        // Mặc định hiện Shop Nhân vật
+        OpenCharacterTab();
+        UpdateCurrencyUI();
     }
 
-    public void UpdateShopUI(int index)
+    // --- LOGIC CHUYỂN TAB ---
+    public void OpenCharacterTab()
     {
-        // Chặn lỗi: Nếu Hải chỉ có 1 data mà lỡ bấm nút số 2 -> Return ngay để không lỗi đỏ
-        if (index >= allCharacters.Length || index < 0) return;
-
-        currentIndex = index;
-        CharacterShopData data = allCharacters[index];
-
-        // 1. Xử lý Model 3D (Xóa cũ tạo mới)
-        if (currentModel != null) Destroy(currentModel);
-        currentModel = Instantiate(data.modelPrefab, spawnPoint.position, spawnPoint.rotation);
-        currentModel.transform.SetParent(spawnPoint);
-
-        // Ép nhân vật nhảy về chính giữa điểm Spawn (tọa độ 0,0,0 so với cha)
-        currentModel.transform.localPosition = Vector3.zero;
-        currentModel.transform.localRotation = Quaternion.identity; // Reset góc xoay luôn cho thẳng
-        
-
-        // 2. --- LOGIC 3 TRẠNG THÁI QUAN TRỌNG ---
-        bool isUnlocked = PlayerDataManager.Instance.IsCharacterUnlocked(data.characterName);
-        string currentSelectedChar = PlayerDataManager.Instance.GetSelectedCharacter();
-
-        if (isUnlocked)
-        {
-            // Trạng thái: ĐÃ MUA
-            priceText.text = "OWNED";
-
-            if (currentSelectedChar == data.characterName)
-            {
-                // Trạng thái 1: ĐANG SỬ DỤNG (SELECTED)
-                btnText.text = "SELECTED";
-                buyButton.interactable = false; // Làm mờ nút đi để người chơi biết là đang dùng rồi
-            }
-            else
-            {
-                // Trạng thái 2: ĐÃ MUA NHƯNG CHƯA DÙNG (SELECT)
-                btnText.text = "SELECT";
-                buyButton.interactable = true; // Cho phép bấm để chọn
-            }
-        }
-        else
-        {
-            // Trạng thái 3: CHƯA MUA (BUY)
-            priceText.text = data.price.ToString("N0"); // Hiện giá tiền
-            btnText.text = "BUY";
-            buyButton.interactable = true;
-        }
-    }
-
-    public void OnClickBuyOrEquip()
-    {
-        CharacterShopData data = allCharacters[currentIndex];
-        bool isUnlocked = PlayerDataManager.Instance.IsCharacterUnlocked(data.characterName);
-
-        if (isUnlocked)
-        {
-            // Nếu đã mua rồi -> Bấm nút nghĩa là CHỌN (Select)
-            PlayerDataManager.Instance.SetSelectedCharacter(data.characterName);
-            Debug.Log("Đã chọn nhân vật: " + data.characterName);
-        }
-        else
-        {
-            // Nếu chưa mua -> Bấm nút nghĩa là MUA (Buy)
-            if (PlayerDataManager.Instance.SpendCoins(data.price))
-            {
-                PlayerDataManager.Instance.UnlockCharacter(data.characterName);
-                PlayerDataManager.Instance.SetSelectedCharacter(data.characterName); // Mua xong tự chọn luôn
-                Debug.Log("Mua thành công!");
-            }
-            else
-            {
-                Debug.Log("Không đủ tiền!");
-                // Chỗ này Hải có thể làm cái bảng thông báo "Nạp thêm tiền đê"
-                return; // Thoát ra không cập nhật UI
-            }
-        }
-
-        // Cập nhật lại giao diện ngay lập tức sau khi bấm
+        characterShopPanel.SetActive(true);
+        diamondShopPanel.SetActive(false);
+        character3DModelParent.gameObject.SetActive(true); // Hiện nhân vật 3D
         UpdateShopUI(currentIndex);
     }
 
-    public void BackToMenu()
+    public void OpenDiamondTab()
     {
-        // Quay về Scene tên là "Menu" (hoặc tên Scene menu của Hải)
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        characterShopPanel.SetActive(false);
+        diamondShopPanel.SetActive(true);
+        character3DModelParent.gameObject.SetActive(false); // Ẩn nhân vật 3D đi cho đỡ rối
     }
+
+    // --- LOGIC HIỂN THỊ SHOP ---
+    public void UpdateShopUI(int index)
+    {
+        if (index >= allCharacters.Length || index < 0) return;
+        currentIndex = index;
+        CharacterShopData data = allCharacters[index];
+
+        // 1. Xử lý Model 3D
+        if (currentModel != null) Destroy(currentModel);
+        if (character3DModelParent.gameObject.activeSelf) // Chỉ tạo khi đang ở Tab Character
+        {
+            currentModel = Instantiate(data.modelPrefab, spawnPoint.position, spawnPoint.rotation);
+            currentModel.transform.SetParent(spawnPoint);
+            currentModel.transform.localPosition = Vector3.zero;
+            currentModel.transform.localRotation = Quaternion.identity;
+        }
+
+        // 2. Logic Nút Mua
+        bool isUnlocked = PlayerDataManager.Instance.IsCharacterUnlocked(data.characterName);
+        string currentSelected = PlayerDataManager.Instance.GetSelectedCharacter();
+
+        if (isUnlocked)
+        {
+            // TRƯỜNG HỢP 1: ĐÃ MUA RỒI
+            // -> Phải TẮT hết 2 nút mua đi (Quan trọng!)
+            btnBuyGold.gameObject.SetActive(false);     // Tắt nút Vàng
+            btnBuyDiamond.gameObject.SetActive(false);  // Tắt nút Kim cương (Cái nút xanh đang bị lỗi của Hải)
+
+            // -> Chỉ BẬT nút Chọn (Equip) lên thôi
+            btnEquip.gameObject.SetActive(true);
+
+            // Logic chữ Selected/Equip
+            if (currentSelected == data.characterName)
+            {
+                txtEquip.text = "SELECTED";
+                btnEquip.interactable = false; // Đang chọn rồi thì không bấm nữa
+            }
+            else
+            {
+                txtEquip.text = "SELECT"; // Hoặc EQUIP
+                btnEquip.interactable = true;
+            }
+        }
+        else
+        {
+            // TRƯỜNG HỢP 2: CHƯA MUA
+            // -> BẬT 2 nút mua lên
+            btnBuyGold.gameObject.SetActive(true);
+            btnBuyDiamond.gameObject.SetActive(true);
+
+            // -> TẮT nút Chọn đi
+            btnEquip.gameObject.SetActive(false);
+
+            // Cập nhật giá tiền
+            txtGoldPrice.text = data.price.ToString("N0");
+            txtDiamondPrice.text = data.diamondPrice.ToString("N0");
+        }
+    }
+
+    // --- CÁC HÀM BẤM NÚT ---
+
+    public void OnBuyWithGold()
+    {
+        CharacterShopData data = allCharacters[currentIndex];
+        if (PlayerDataManager.Instance.SpendCoins(data.price))
+        {
+            UnlockAndSelect(data);
+            UpdateCurrencyUI();
+        }
+        else Debug.Log("Thiếu vàng!");
+    }
+
+    public void OnBuyWithDiamond()
+    {
+        CharacterShopData data = allCharacters[currentIndex];
+        // Hàm SpendDiamonds Hải cần viết thêm bên PlayerDataManager nhé
+        if (PlayerDataManager.Instance.SpendDiamonds(data.diamondPrice))
+        {
+            UnlockAndSelect(data);
+            UpdateCurrencyUI();
+        }
+        else Debug.Log("Thiếu kim cương!");
+    }
+
+    public void OnEquipClick()
+    {
+        CharacterShopData data = allCharacters[currentIndex];
+        PlayerDataManager.Instance.SetSelectedCharacter(data.characterName);
+        UpdateShopUI(currentIndex);
+    }
+
+    void UnlockAndSelect(CharacterShopData data)
+    {
+        PlayerDataManager.Instance.UnlockCharacter(data.characterName);
+        PlayerDataManager.Instance.SetSelectedCharacter(data.characterName);
+        UpdateShopUI(currentIndex);
+    }
+
+    // Hàm nạp tiền thật (Giả lập)
+    public void BuyDiamondPack(int amount)
+    {
+        PlayerDataManager.Instance.AddDiamonds(amount);
+        // Cập nhật UI tiền tổng ở góc màn hình...
+        UpdateCurrencyUI();
+        Debug.Log("Đã nạp " + amount + " kim cương!");
+    }
+
+    // Hàm này chuyên dùng để vẽ lại số tiền trên góc màn hình
+    public void UpdateCurrencyUI()
+    {
+        if (txtTotalCoins != null)
+            txtTotalCoins.text = PlayerDataManager.Instance.GetTotalCoins().ToString("N0");
+
+        if (txtTotalDiamonds != null)
+            txtTotalDiamonds.text = PlayerDataManager.Instance.GetTotalDiamonds().ToString("N0");
+    }
+
+    // Nút mũi tên PHẢI (Next)
+    public void OnNextClick()
+    {
+        currentIndex++; // Tăng số thứ tự lên
+        // Nếu vượt quá số lượng nhân vật thì quay về con đầu tiên
+        if (currentIndex >= allCharacters.Length)
+        {
+            currentIndex = 0;
+        }
+        UpdateShopUI(currentIndex); // Cập nhật lại hình ảnh và giá tiền
+    }
+
+    // Nút mũi tên TRÁI (Previous)
+    public void OnPrevClick()
+    {
+        currentIndex--; // Giảm số thứ tự xuống
+        // Nếu nhỏ hơn 0 thì nhảy về con cuối cùng
+        if (currentIndex < 0)
+        {
+            currentIndex = allCharacters.Length - 1;
+        }
+        UpdateShopUI(currentIndex);
+    }
+
+    // Nút Back, Next, Prev giữ nguyên...
+    public void BackToMenu() { SceneManager.LoadScene("Menu"); }
 }

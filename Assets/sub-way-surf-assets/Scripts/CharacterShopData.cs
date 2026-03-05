@@ -6,6 +6,7 @@ public class CharacterShopData : ScriptableObject
 {
     public string characterName;   // Tên nhân vật (Ninja, Zombie...)
     public int price;              // Giá tiền
+    public int diamondPrice;
     public GameObject modelPrefab; // Kéo file 3D của nhân vật vào đây
     public Sprite icon;            // Ảnh đại diện để hiện trong ô chọn
 }

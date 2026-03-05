@@ -26,9 +26,6 @@ public class MenuController : MonoBehaviour
     public GameObject btnDoubleUp;
 
     [Header("Audio Settings UI")]
-    // --- KHÔNG CẦN AudioSource Ở ĐÂY NỮA VÌ MusicManager LO RỒI ---
-    // public AudioSource bgMusicSource;  <-- Đã xóa dòng này
-
     public Slider musicSlider;       // Thanh kéo to nhỏ
     public Image musicIconDisplay;   // Ảnh nút nhạc
     public Sprite musicOnSprite;     // Hình nốt nhạc đẹp
@@ -42,6 +39,12 @@ public class MenuController : MonoBehaviour
     [Header("Transition")]
     public Animator cloudAnimator;
 
+    // --- MỚI THÊM: HIỂN THỊ NHÂN VẬT Ở MENU ---
+    [Header("Character Display")]
+    public Transform characterSpawnPoint;    // Kéo cái vị trí đứng vào đây
+    public GameObject[] allCharacterPrefabs; // Kéo danh sách các Prefab nhân vật vào đây
+    private GameObject currentCharacterModel;
+
     private int coinsCollectedInRun;
 
     void Start()
@@ -50,19 +53,18 @@ public class MenuController : MonoBehaviour
         UpdateTotalCurrencyUI();
 
         // 2. Cập nhật UI Âm thanh theo trạng thái của MusicManager
-        // Kiểm tra xem MusicManager đã tồn tại chưa để tránh lỗi
         if (MusicManager.Instance != null)
         {
-            // Cập nhật thanh trượt đúng với âm lượng hiện tại
             if (musicSlider != null)
             {
                 musicSlider.value = MusicManager.Instance.musicSource.volume;
                 musicSlider.onValueChanged.AddListener(SetMusicVolume);
             }
-
-            // Cập nhật hình ảnh nút (Bật hay Tắt)
             UpdateMusicIconUI();
         }
+
+        // 3. --- MỚI THÊM: LOAD NHÂN VẬT ĐANG CHỌN ---
+        LoadSelectedCharacter();
     }
 
     void Update()
@@ -77,21 +79,57 @@ public class MenuController : MonoBehaviour
             PlayerDataManager.Instance.AddDiamonds(100);
             UpdateTotalCurrencyUI();
         }
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("Test Death Menu!");
+            // Gọi hàm hiện bảng với số liệu giả (Điểm 1234, Tiền 555)
+            ShowDeathMenu(1234, 555);
+        }
     }
 
-    // --- CÁC HÀM XỬ LÝ ÂM THANH MỚI (GỌI SANG MUSIC MANAGER) ---
+    // --- HÀM MỚI: TÌM VÀ HIỂN THỊ NHÂN VẬT ---
+    public void LoadSelectedCharacter()
+    {
+        // Lấy tên nhân vật đang được chọn trong Data
+        string selectedName = PlayerDataManager.Instance.GetSelectedCharacter();
 
-    // Hàm này gán vào nút Bấm Nhạc (Button OnClick)
+        // Tìm xem có Prefab nào trùng tên không
+        GameObject prefabToSpawn = null;
+        foreach (var prefab in allCharacterPrefabs)
+        {
+            // Quan trọng: Tên Prefab phải giống hệt tên trong Data (Tricky, Dino...)
+            if (prefab.name == selectedName)
+            {
+                prefabToSpawn = prefab;
+                break;
+            }
+        }
+
+        // Nếu tìm thấy thì tạo ra
+        if (prefabToSpawn != null)
+        {
+            // Xóa con cũ đi (nếu có)
+            if (currentCharacterModel != null) Destroy(currentCharacterModel);
+
+            // Tạo con mới tại vị trí SpawnPoint
+            currentCharacterModel = Instantiate(prefabToSpawn, characterSpawnPoint.position, characterSpawnPoint.rotation);
+
+            // Gán làm con của SpawnPoint cho gọn gàng
+            currentCharacterModel.transform.SetParent(characterSpawnPoint);
+        }
+    }
+    // ------------------------------------------
+
+    // --- CÁC HÀM XỬ LÝ ÂM THANH (GỌI SANG MUSIC MANAGER) ---
     public void OnMusicToggleClick()
     {
         if (MusicManager.Instance != null)
         {
-            MusicManager.Instance.ToggleMusic(); // Gọi Manager tắt/bật
-            UpdateMusicIconUI();                 // Cập nhật lại hình cái nút
+            MusicManager.Instance.ToggleMusic();
+            UpdateMusicIconUI();
         }
     }
 
-    // Hàm này gán vào Slider (OnValueChanged)
     public void SetMusicVolume(float volume)
     {
         if (MusicManager.Instance != null)
@@ -100,19 +138,15 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    // Hàm phụ để đổi hình cái nút (Private)
     private void UpdateMusicIconUI()
     {
         if (musicIconDisplay != null && MusicManager.Instance != null)
         {
-            // Nếu nhạc đang bật -> dùng hình On, ngược lại dùng hình Off
             musicIconDisplay.sprite = MusicManager.Instance.IsMusicOn() ? musicOnSprite : musicOffSprite;
         }
     }
 
-    // -----------------------------------------------------------
-
-    // --- CÁC HÀM LOGIC GAME / DEATH MENU GIỮ NGUYÊN ---
+    // --- CÁC HÀM LOGIC GAME KHÁC ---
     public void ShowDeathMenu(int score, int coins)
     {
         coinsCollectedInRun = coins;
