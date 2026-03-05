@@ -3,10 +3,15 @@
 public class Character : MonoBehaviour
 {
     [Header("Movement")]
-    public float forwardSpeed = 8f;
-    public float laneDistance = 3f; // khoảng cách giữa các lane
+    public float startSpeed = 8f;
+    public float maxSpeed = 25f;
+    public float speedIncreaseAmount = 2f;
+    public float speedIncreaseInterval = 5f;
+
+    public float laneDistance = 3f;
     public float laneChangeSpeed = 10f;
     public float centerX = -12.67f;
+
     [Header("Jump")]
     public float jumpForce = 7f;
     public float gravity = -20f;
@@ -14,12 +19,16 @@ public class Character : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
 
-    private int currentLane = 1; // 0 = left, 1 = middle, 2 = right
+    private int currentLane = 1;
     private bool isGrounded;
+
+    private float currentSpeed;
+    private float speedTimer;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        currentSpeed = startSpeed;
     }
 
     void Update()
@@ -32,16 +41,24 @@ public class Character : MonoBehaviour
         HandleLaneChange();
         HandleJump();
 
-        Vector3 move = Vector3.forward * forwardSpeed;
+        // ⏱ tăng speed mỗi 5s
+        speedTimer += Time.deltaTime;
+        if (speedTimer >= speedIncreaseInterval)
+        {
+            speedTimer = 0f;
+            currentSpeed = Mathf.Min(currentSpeed + speedIncreaseAmount, maxSpeed);
+        }
 
-        // Target position theo lane
+        Vector3 move = Vector3.forward * currentSpeed;
+
+        // lane movement
         float targetX = centerX + (currentLane - 1) * laneDistance;
         float diff = targetX - transform.position.x;
         move.x = diff * laneChangeSpeed;
 
         controller.Move(move * Time.deltaTime);
 
-        // Gravity
+        // gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
@@ -54,7 +71,6 @@ public class Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D) && currentLane < 2)
             currentLane++;
 
-        // Swipe mobile (basic)
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -79,4 +95,3 @@ public class Character : MonoBehaviour
         }
     }
 }
-
