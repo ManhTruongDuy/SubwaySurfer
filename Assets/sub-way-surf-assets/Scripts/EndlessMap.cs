@@ -6,30 +6,44 @@ public class EndlessMap : MonoBehaviour
     public Transform player;
     public GameObject[] segmentPrefabs;
     public int segmentsOnScreen = 5;
+    [Tooltip("Số segment giữ lại phía sau player trước khi xóa")]
+    public int segmentsBehind = 2;
     [Tooltip("Fallback segment length if auto-detection fails")]
     public float defaultSegmentLength = 50f;
 
     private List<GameObject> activeSegments = new List<GameObject>();
     private float cachedSegmentLength = 0f;
+    private float cachedPivotOffset = 0f; // bounds.min.z - pivot.z của segment (hằng số)
+    private float nextSpawnZ = 0f;        // vị trí Z bounds.min của segment sẽ spawn tiếp theo
+    private Vector3 spawnOrigin;
+    private GameObject scenePlaceholder; // Segment_01 gốc trong scene — không Destroy
 
     void Start()
     {
-        GameObject firstSegment = GameObject.Find("Segment_01");
-        if (firstSegment == null)
+        GameObject placeholder = GameObject.Find("Segment_01");
+        if (placeholder == null)
         {
             Debug.LogError("EndlessMap: 'Segment_01' not found in scene!");
             return;
         }
 
-        activeSegments.Add(firstSegment);
-
-        // Cache length once — avoid recalculating every frame
-        cachedSegmentLength = GetFullLength(firstSegment);
+        cachedSegmentLength = GetFullLength(placeholder);
         if (cachedSegmentLength <= 0f)
         {
             cachedSegmentLength = defaultSegmentLength;
             Debug.LogWarning($"EndlessMap: Could not detect segment length, using default ({defaultSegmentLength}).");
         }
+
+        // Tính pivot offset một lần từ placeholder — dùng chung cho mọi segment
+        cachedPivotOffset = GetPivotOffset(placeholder);
+        // nextSpawnZ = bounds.min.z thực tế của Segment_01 — điểm bắt đầu map
+        nextSpawnZ = placeholder.transform.position.z + cachedPivotOffset;
+        spawnOrigin = placeholder.transform.position;
+
+        // Giữ Segment_01 trong activeSegments — nhân vật đứng trên nó ngay lúc start
+        scenePlaceholder = placeholder;
+        activeSegments.Add(placeholder);
+        nextSpawnZ += cachedSegmentLength; // segment tiếp theo spawn ngay sau Segment_01
 
         for (int i = 1; i < segmentsOnScreen; i++)
         {
@@ -44,8 +58,8 @@ public class EndlessMap : MonoBehaviour
         GameObject first = activeSegments[0];
         if (first == null) return;
 
-        // Khi player vượt qua hết segment đầu tiên
-        if (player.position.z > GetSegmentEndZ(first))
+        // Xóa segment khi nó đã nằm đủ xa phía sau player
+        if (player.position.z > GetSegmentEndZ(first) + cachedSegmentLength * segmentsBehind)
         {
             SpawnSegment();
             DeleteSegment();
@@ -56,8 +70,6 @@ public class EndlessMap : MonoBehaviour
     {
         if (segmentPrefabs == null || segmentPrefabs.Length == 0) return;
 
-        // Build a valid list each spawn — guards against destroyed scene objects
-        // assigned by mistake (drag from Hierarchy instead of Project window)
         List<GameObject> validPrefabs = new List<GameObject>();
         foreach (GameObject prefab in segmentPrefabs)
         {
@@ -75,43 +87,35 @@ public class EndlessMap : MonoBehaviour
 
         int randomIndex = Random.Range(0, validPrefabs.Count);
 
-        GameObject last = activeSegments[activeSegments.Count - 1];
+        // Spawn tạm tại origin, sau đó tính pivot offset thực của segment này
+        GameObject newSegment = Instantiate(validPrefabs[randomIndex], spawnOrigin, Quaternion.identity);
+        newSegment.SetActive(true);
 
-        // Dùng bounds.max.z thực tế của segment cuối để tránh khoảng trống
-        float lastEndZ = GetSegmentEndZ(last);
+        // Tính pivot offset thực tế của segment vừa spawn (mỗi prefab có thể khác nhau)
+        float actualPivotOffset = GetPivotOffset(newSegment);
+        float pivotZ = nextSpawnZ - actualPivotOffset;
+        newSegment.transform.position = new Vector3(spawnOrigin.x, spawnOrigin.y, pivotZ);
 
-        Vector3 spawnPos = new Vector3(
-            last.transform.position.x,
-            last.transform.position.y,
-            lastEndZ
-        );
-
-        GameObject newSegment = Instantiate(validPrefabs[randomIndex], spawnPos, Quaternion.identity);
-
-        // Nếu pivot của prefab không nằm ở Z_min, bù offset để khớp hoàn toàn
-        float startOffset = GetSegmentStartOffset(newSegment);
-        if (Mathf.Abs(startOffset) > 0.01f)
-        {
-            newSegment.transform.position = new Vector3(
-                spawnPos.x,
-                spawnPos.y,
-                lastEndZ - startOffset
-            );
-        }
+        nextSpawnZ += cachedSegmentLength;
 
         activeSegments.Add(newSegment);
     }
 
     void DeleteSegment()
     {
-        Destroy(activeSegments[0]);
+        GameObject seg = activeSegments[0];
         activeSegments.RemoveAt(0);
+
+        if (seg == scenePlaceholder)
+            seg.SetActive(false); // scene object gốc: chỉ ẩn, không Destroy
+        else
+            Destroy(seg);         // clone: xóa hẳn khỏi Hierarchy
     }
 
-    // Tính chiều dài thực của toàn bộ prefab theo trục Z
+    // Tính chiều dài (bounds.size.z) của segment
     float GetFullLength(GameObject segment)
     {
-        Renderer[] renderers = segment.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = segment.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0) return 0f;
 
         Bounds bounds = renderers[0].bounds;
@@ -121,7 +125,7 @@ public class EndlessMap : MonoBehaviour
         return bounds.size.z;
     }
 
-    // Trả về vị trí Z kết thúc thực tế của segment (bounds.max.z)
+    // Trả về vị trí Z kết thúc thực tế của segment (bounds.max.z) — dùng cho despawn check
     float GetSegmentEndZ(GameObject segment)
     {
         Renderer[] renderers = segment.GetComponentsInChildren<Renderer>();
@@ -135,18 +139,16 @@ public class EndlessMap : MonoBehaviour
         return bounds.max.z;
     }
 
-    // Trả về khoảng cách từ pivot đến điểm đầu (Z_min) của segment
-    // Dùng để bù offset nếu pivot không nằm ở Z_min
-    float GetSegmentStartOffset(GameObject segment)
+    // Trả về khoảng cách từ pivot đến bounds.min.z (= bounds.min.z - pivot.z)
+    float GetPivotOffset(GameObject segment)
     {
-        Renderer[] renderers = segment.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = segment.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0) return 0f;
 
         Bounds bounds = renderers[0].bounds;
         foreach (Renderer r in renderers)
             bounds.Encapsulate(r.bounds);
 
-        // offset âm khi pivot nằm sau Z_min (vd: pivot ở giữa -> offset = -L/2)
         return bounds.min.z - segment.transform.position.z;
     }
 }
