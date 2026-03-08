@@ -287,9 +287,9 @@ MonoBehaviour:
   speedIncreaseInterval: 5
   laneDistance: 2.25
   laneChangeSpeed: 10
-  centerX: -10.84
-  jumpForce: 20
-  gravity: -60
+  centerX: 2.6
+  jumpForce: 11
+  gravity: -30
 --- !u!143 &725026353
 CharacterController:
   m_ObjectHideFlags: 0
@@ -324,7 +324,7 @@ Transform:
   m_GameObject: {fileID: 725026351}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.65, y: 0.5, z: 116.24}
+  m_LocalPosition: {x: 29.8, y: 0.5, z: 247.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -463,7 +463,7 @@ Transform:
   m_GameObject: {fileID: 757313565}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.65, y: 4.2, z: 107.8}
+  m_LocalPosition: {x: 2.75, y: 4.2, z: 107.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -524,17 +524,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1127837210}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eaecbdac742fca842af32daec12ef149, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c9f65af8868d9e4baf0fa40e73a7346, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LaneSpawnSystem
-  trainPrefab: {fileID: 3056249561298091416, guid: eaf4b6883778502428518200efc17f74, type: 3}
+  m_EditorClassIdentifier: '::'
+  trainPrefab: {fileID: 3327247850503878481, guid: 3d23b75960668824699786ac9e066c03, type: 3}
   coinPrefab: {fileID: 1017623279675247142, guid: 336e112015040e64384d08acac7c2a3a, type: 3}
   centerX: -10.84
-  laneDistance: 2.04
-  coinRows: 10
-  coinSpacing: 2
-  maxTrainChain: 3
-  trainSpacing: 10
+  laneDistance: 3.11
+  trainHeight: -0.35
+  coinHeight: 0.75
+  segmentLength: 30
+  sectionStep: 10
+--- !u!114 &1127837214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1127837210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f89d1c1e6c2c5429685a6194cc0186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1205285305
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,17 +633,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1221776533}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eaecbdac742fca842af32daec12ef149, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c9f65af8868d9e4baf0fa40e73a7346, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LaneSpawnSystem
-  trainPrefab: {fileID: 3056249561298091416, guid: eaf4b6883778502428518200efc17f74, type: 3}
+  m_EditorClassIdentifier: '::'
+  trainPrefab: {fileID: 3327247850503878481, guid: 3d23b75960668824699786ac9e066c03, type: 3}
   coinPrefab: {fileID: 1017623279675247142, guid: 336e112015040e64384d08acac7c2a3a, type: 3}
-  centerX: -10.84
-  laneDistance: 2.04
-  coinRows: 10
-  coinSpacing: 2
-  maxTrainChain: 3
-  trainSpacing: 10
+  centerX: 2.67
+  laneDistance: 2.11
+  trainHeight: -0.35
+  coinHeight: -0.91
+  segmentLength: 114
+  sectionStep: 25
+--- !u!114 &1221776540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1221776533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f89d1c1e6c2c5429685a6194cc0186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1460755358 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7263049366857577078, guid: 729bb66f728ba014b88409e089633e71, type: 3}
@@ -672,17 +696,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 1460755358}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eaecbdac742fca842af32daec12ef149, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c9f65af8868d9e4baf0fa40e73a7346, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LaneSpawnSystem
-  trainPrefab: {fileID: 3056249561298091416, guid: eaf4b6883778502428518200efc17f74, type: 3}
+  m_EditorClassIdentifier: '::'
+  trainPrefab: {fileID: 3327247850503878481, guid: 3d23b75960668824699786ac9e066c03, type: 3}
   coinPrefab: {fileID: 1017623279675247142, guid: 336e112015040e64384d08acac7c2a3a, type: 3}
   centerX: -10.84
-  laneDistance: 2.04
-  coinRows: 10
-  coinSpacing: 2
-  maxTrainChain: 3
-  trainSpacing: 10
+  laneDistance: 3.11
+  trainHeight: -0.35
+  coinHeight: 0.75
+  segmentLength: 30
+  sectionStep: 10
+--- !u!114 &1460755362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460755358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8f89d1c1e6c2c5429685a6194cc0186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1001 &1518610429
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -804,11 +840,10 @@ MonoBehaviour:
   player: {fileID: 725026354}
   segmentPrefabs:
   - {fileID: 1221776533}
-  - {fileID: 1127837210}
-  - {fileID: 1460755358}
+  - {fileID: 1221776533}
+  - {fileID: 1221776533}
+  segmentLength: 114
   segmentsOnScreen: 5
-  segmentsBehind: 2
-  defaultSegmentLength: 50
 --- !u!4 &1608443891
 Transform:
   m_ObjectHideFlags: 0
@@ -1009,7 +1044,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3920744101998149957}
-  - {fileID: 6858984058028847275}
   - {fileID: 7142706944411572572}
   - {fileID: 2889503720879791455}
   - {fileID: 3978398141966367945}
@@ -1825,14 +1859,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 543450651668555887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3894111175532656455
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8399683158603491379}
-  m_Mesh: {fileID: -2734044389635515318, guid: 1112dc807bdfe4a4f843ce91c8a81ef8, type: 3}
 --- !u!4 &3920744101998149957
 Transform:
   m_ObjectHideFlags: 0
@@ -2393,7 +2419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7263049366857577078, guid: 729bb66f728ba014b88409e089633e71, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2405,6 +2431,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7263049366857577078, guid: 729bb66f728ba014b88409e089633e71, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1460755361}
+    - targetCorrespondingSourceObject: {fileID: 7263049366857577078, guid: 729bb66f728ba014b88409e089633e71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1460755362}
   m_SourcePrefab: {fileID: 100100000, guid: 729bb66f728ba014b88409e089633e71, type: 3}
 --- !u!1 &5151559202759362878
 GameObject:
@@ -2424,55 +2453,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!23 &5157015279384232213
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8399683158603491379}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 86503892bf53ede49aa79ee597f07c51, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!23 &5234255274680576835
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2866,21 +2846,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 543450651668555887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &6858984058028847275
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8399683158603491379}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543450651668555887}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6924129398621808265
 GameObject:
   m_ObjectHideFlags: 0
@@ -2909,7 +2874,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1409996348446038732, guid: 81a80898dfd30aa4db744221002b98a3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1409996348446038732, guid: 81a80898dfd30aa4db744221002b98a3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2965,6 +2930,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3129117863747999802, guid: 81a80898dfd30aa4db744221002b98a3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1221776539}
+    - targetCorrespondingSourceObject: {fileID: 3129117863747999802, guid: 81a80898dfd30aa4db744221002b98a3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1221776540}
   m_SourcePrefab: {fileID: 100100000, guid: 81a80898dfd30aa4db744221002b98a3, type: 3}
 --- !u!4 &6997978682960106847
 Transform:
@@ -3258,7 +3226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 277855381163189929, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5280122536112936322, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3342,6 +3310,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 277855381163189929, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1127837213}
+    - targetCorrespondingSourceObject: {fileID: 277855381163189929, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1127837214}
   m_SourcePrefab: {fileID: 100100000, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
 --- !u!1 &7874426095783532316
 GameObject:
@@ -3573,24 +3544,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 980379283039214671}
   m_Mesh: {fileID: -8213337804584722497, guid: 1112dc807bdfe4a4f843ce91c8a81ef8, type: 3}
---- !u!1 &8399683158603491379
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6858984058028847275}
-  - component: {fileID: 3894111175532656455}
-  - component: {fileID: 5157015279384232213}
-  m_Layer: 0
-  m_Name: Train
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &8432393864154120669
 Transform:
   m_ObjectHideFlags: 0

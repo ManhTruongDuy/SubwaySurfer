@@ -46,7 +46,7 @@ public class LaneSpawnSystem : MonoBehaviour
         {
             Vector3 pos = new Vector3(
                 laneX,
-                1.5f,
+                -1f,
                 startZ + i * coinSpacing
             );
 
@@ -62,7 +62,7 @@ public class LaneSpawnSystem : MonoBehaviour
         {
             Vector3 pos = new Vector3(
                 laneX,
-                0,
+                -0.5f,
                 startZ + i * trainSpacing
             );
 
