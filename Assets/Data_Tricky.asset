@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterShopData
   characterName: Tricky
   price: 0
-  modelPrefab: {fileID: 5439967453770611584, guid: 4e53781f7dddb1144b6d39d35609fcc4, type: 3}
+  diamondPrice: 0
+  modelPrefab: {fileID: 6545444124636264357, guid: 4e53781f7dddb1144b6d39d35609fcc4, type: 3}
   icon: {fileID: 0}

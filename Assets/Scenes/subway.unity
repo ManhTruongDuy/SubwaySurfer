@@ -246,11 +246,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!4 &654409500 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9a2475abfdeb710428ebe236a51838d7, type: 3}
-  m_PrefabInstance: {fileID: 1518610429}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &725026351
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5c7757aea16e9046876bf26bba5ce3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Character
+  animator: {fileID: 0}
   startSpeed: 8
   maxSpeed: 25
   speedIncreaseAmount: 2
@@ -327,8 +323,7 @@ Transform:
   m_LocalPosition: {x: 29.8, y: 0.5, z: 247.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 654409500}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &757313565
@@ -515,12 +510,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5280122536112936322, guid: 3779ce5b00c5fbb42915345608276d61, type: 3}
   m_PrefabInstance: {fileID: 7823615728631958766}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
 --- !u!114 &1127837213
+=======
+--- !u!1 &1178901730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1178901732}
+  - component: {fileID: 1178901731}
+  m_Layer: 0
+  m_Name: _PlayerSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1178901731
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1127837210}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -537,16 +554,45 @@ MonoBehaviour:
   sectionStep: 10
 --- !u!114 &1127837214
 MonoBehaviour:
+=======
+  m_GameObject: {fileID: 1178901730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e35d95afb7023741a682168cb818cc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
+  playerRoot: {fileID: 725026354}
+  playerScript: {fileID: 725026352}
+  allCharacterPrefabs:
+  - {fileID: 6545444124636264357, guid: 4e53781f7dddb1144b6d39d35609fcc4, type: 3}
+  - {fileID: 7299958358963050477, guid: 819faf8373a396e4da134626d4d32d1c, type: 3}
+  - {fileID: 80000357216100609, guid: 23c39f7a6612fe04b9ad99e319538853, type: 3}
+  - {fileID: 8438962458171890732, guid: 6007a636ce4465940a85ac83428eb888, type: 3}
+--- !u!4 &1178901732
+Transform:
+>>>>>>> Stashed changes
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 1127837210}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8f89d1c1e6c2c5429685a6194cc0186, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+=======
+  m_GameObject: {fileID: 1178901730}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.58148, y: 1.55769, z: 116.61525}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+>>>>>>> Stashed changes
 --- !u!1 &1205285305
 GameObject:
   m_ObjectHideFlags: 0
@@ -687,6 +733,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1409037568436019178, guid: 729bb66f728ba014b88409e089633e71, type: 3}
   m_PrefabInstance: {fileID: 5063595439205892449}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
 --- !u!114 &1460755361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -808,6 +855,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a2475abfdeb710428ebe236a51838d7, type: 3}
+=======
+>>>>>>> Stashed changes
 --- !u!1 &1608443889
 GameObject:
   m_ObjectHideFlags: 0
@@ -3842,3 +3891,4 @@ SceneRoots:
   - {fileID: 725026354}
   - {fileID: 1608443891}
   - {fileID: 1205285307}
+  - {fileID: 1178901732}
