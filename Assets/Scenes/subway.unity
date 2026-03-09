@@ -278,8 +278,7 @@ MonoBehaviour:
   playerRoot: {fileID: 725026354}
   playerScript: {fileID: 725026352}
   allCharacterPrefabs:
-  - {fileID: 5439967453770611584, guid: 4e53781f7dddb1144b6d39d35609fcc4, type: 3}
-  - {fileID: 5439967453770611584, guid: 62662fd6a68cf7447bcbe77dc0850c6c, type: 3}
+  - {fileID: 6013045331400885090, guid: 4e53781f7dddb1144b6d39d35609fcc4, type: 3}
   - {fileID: 7299958358963050477, guid: 819faf8373a396e4da134626d4d32d1c, type: 3}
   - {fileID: 80000357216100609, guid: 23c39f7a6612fe04b9ad99e319538853, type: 3}
   - {fileID: 8438962458171890732, guid: 6007a636ce4465940a85ac83428eb888, type: 3}
@@ -802,8 +801,6 @@ MonoBehaviour:
   - {fileID: 1221776533}
   segmentLength: 114
   segmentsOnScreen: 5
-  segmentsBehind: 2
-  defaultSegmentLength: 50
 --- !u!4 &1608443891
 Transform:
   m_ObjectHideFlags: 0
