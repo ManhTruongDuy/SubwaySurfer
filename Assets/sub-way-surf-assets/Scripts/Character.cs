@@ -29,6 +29,11 @@ public class Character : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         currentSpeed = startSpeed;
+
+        // Đặt player đúng lane center ngay khi game bắt đầu
+        Vector3 pos = transform.position;
+        pos.x = centerX;
+        transform.position = pos;
     }
 
     void Update()

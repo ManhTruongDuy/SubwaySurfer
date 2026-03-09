@@ -6,6 +6,15 @@ public class CameraFollow : MonoBehaviour
     public Vector3 offset;
     public float smoothSpeed = 5f;
 
+    void Start()
+    {
+        if (target != null)
+        {
+            // đặt camera đúng vị trí ngay frame đầu
+            transform.position = target.position + offset;
+        }
+
+    }
     void LateUpdate()
     {
         if (!target) return;

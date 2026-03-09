@@ -36,7 +36,7 @@ public class EndlessMap : MonoBehaviour
         }
     }
 
-    void SpawnSegment() 
+    void SpawnSegment()
     {
         int index = Random.Range(0, segmentPrefabs.Length);
 

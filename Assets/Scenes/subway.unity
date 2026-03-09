@@ -842,10 +842,8 @@ MonoBehaviour:
   - {fileID: 1221776533}
   - {fileID: 1221776533}
   - {fileID: 1221776533}
-  segmentLength: 114
+  segmentLength: 30
   segmentsOnScreen: 5
-  segmentsBehind: 2
-  defaultSegmentLength: 50
 --- !u!4 &1608443891
 Transform:
   m_ObjectHideFlags: 0
