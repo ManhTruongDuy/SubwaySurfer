@@ -2616,6 +2616,9 @@ MonoBehaviour:
   allCharacters:
   - {fileID: 11400000, guid: 7ba047ba01651db4e99549149002dc08, type: 2}
   - {fileID: 11400000, guid: bada01ffc8a7829489a65ed69e7aa8df, type: 2}
+  - {fileID: 11400000, guid: 3c6a38eaecc470545882545656fc1fe7, type: 2}
+  - {fileID: 11400000, guid: 691d55eec057f664594a0a8dbc2c1b50, type: 2}
+  - {fileID: 11400000, guid: 614900c11b1852a45baca5f0535bd633, type: 2}
   spawnPoint: {fileID: 1809736253}
   characterShopPanel: {fileID: 764614618}
   diamondShopPanel: {fileID: 1354023820}
@@ -4204,8 +4207,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1809736252}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 230.25, y: 2.04, z: 285.33}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 229.98, y: 1.71, z: 285.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
