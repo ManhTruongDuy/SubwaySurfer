@@ -2615,6 +2615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   allCharacters:
   - {fileID: 11400000, guid: 7ba047ba01651db4e99549149002dc08, type: 2}
+  - {fileID: 11400000, guid: bada01ffc8a7829489a65ed69e7aa8df, type: 2}
   - {fileID: 11400000, guid: 3c6a38eaecc470545882545656fc1fe7, type: 2}
   - {fileID: 11400000, guid: 691d55eec057f664594a0a8dbc2c1b50, type: 2}
   - {fileID: 11400000, guid: 614900c11b1852a45baca5f0535bd633, type: 2}

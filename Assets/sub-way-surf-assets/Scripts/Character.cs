@@ -2,8 +2,6 @@
 
 public class Character : MonoBehaviour
 {
-    public Animator animator;
-
     [Header("Movement")]
     public float startSpeed = 8f;
     public float maxSpeed = 25f;
@@ -31,11 +29,6 @@ public class Character : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         currentSpeed = startSpeed;
-
-        if (animator != null)
-        {
-            animator.SetBool("IsGame", true); // Tên "IsGame" phải giống hệt bước 1
-        }
     }
 
     void Update()
