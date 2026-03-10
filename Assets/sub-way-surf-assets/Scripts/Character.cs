@@ -2,6 +2,9 @@
 
 public class Character : MonoBehaviour
 {
+
+    public Animator animator;
+
     [Header("Movement")]
     public float startSpeed = 8f;
     public float maxSpeed = 25f;
