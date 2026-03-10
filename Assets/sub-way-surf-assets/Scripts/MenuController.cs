@@ -106,7 +106,7 @@ public class MenuController : MonoBehaviour
         }
 
         // Nếu tìm thấy thì tạo ra
-        if (prefabToSpawn != null)
+        if (prefabToSpawn != null && characterSpawnPoint != null)
         {
             // Xóa con cũ đi (nếu có)
             if (currentCharacterModel != null) Destroy(currentCharacterModel);
@@ -206,7 +206,7 @@ public class MenuController : MonoBehaviour
 
     public void PlayGame()
     {
-        if (cloudAnimator != null) cloudAnimator.Play("Cloud_Open");
+        if (cloudAnimator != null && cloudAnimator.gameObject.activeInHierarchy) cloudAnimator.Play("Cloud_Open");
         Invoke("LoadSubwayScene", 1.0f);
     }
     void LoadSubwayScene() { SceneManager.LoadScene(gameSceneName); }
