@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EndlessMap : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class EndlessMap : MonoBehaviour
     public GameObject[] segmentPrefabs;
 
     [Header("Settings")]
-    public float segmentLength = 30f;
+    public float segmentLength = 112f;
     public int segmentsOnScreen = 5;
 
     private List<GameObject> activeSegments = new List<GameObject>();
@@ -15,8 +16,8 @@ public class EndlessMap : MonoBehaviour
 
     void Start()
     {
-        // Xóa hoặc ẩn các object rác đang có sẵn trong scene để tránh trùng lặp
         GameObject oldPart = GameObject.Find("Segment_01");
+
         if (oldPart)
         {
             nextSpawnZ = oldPart.transform.position.z;
@@ -24,7 +25,8 @@ public class EndlessMap : MonoBehaviour
             nextSpawnZ += segmentLength;
         }
 
-        for (int i = 0; i < segmentsOnScreen; i++) SpawnSegment();
+        for (int i = 0; i < segmentsOnScreen; i++)
+            SpawnSegment();
     }
 
     void Update()
@@ -40,15 +42,38 @@ public class EndlessMap : MonoBehaviour
     {
         int index = Random.Range(0, segmentPrefabs.Length);
 
-        // Quan trọng: Sử dụng rotation gốc của Prefab để không bị lệch mesh
-        GameObject seg = Instantiate(segmentPrefabs[index], new Vector3(0, 0, nextSpawnZ), segmentPrefabs[index].transform.rotation);
+        Vector3 spawnPos = new Vector3(0, 0, nextSpawnZ);
 
-        // Gọi hệ thống spawn vật phẩm (Coin/Train)
+        // Fix riêng cho Segment 3 (index = 2)
+        if (index == 2)
+        {
+            spawnPos.x = 0.1f;
+            spawnPos.y = -2.6f;
+            
+        }
+        if (index == 1)
+        {
+            spawnPos.y = 0.25f;
+            spawnPos.x = 0.14f;
+        }
+        if(index == 0)
+        {
+            spawnPos.x = 0.2f;
+        }
+
+        GameObject seg = Instantiate(
+            segmentPrefabs[index],
+            spawnPos,
+            segmentPrefabs[index].transform.rotation
+        );
+
         SpawnPatternSystem pattern = seg.GetComponent<SpawnPatternSystem>();
-        if (pattern != null) pattern.GenerateSegmentContent(segmentLength);
+        if (pattern != null)
+            pattern.GenerateSegmentContent(segmentLength);
 
         activeSegments.Add(seg);
         nextSpawnZ += segmentLength;
+
         seg.SetActive(true);
     }
 
@@ -59,8 +84,6 @@ public class EndlessMap : MonoBehaviour
         GameObject seg = activeSegments[0];
         activeSegments.RemoveAt(0);
 
-        // Kiểm tra chính xác: Nếu là Object có sẵn trong Scene thì mới ẩn
-        // Cách tốt nhất là kiểm tra xem nó có phải là prefab clone không
         if (seg.scene.name != null && seg.name == "Segment_01")
         {
             seg.SetActive(false);
