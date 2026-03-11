@@ -44,22 +44,7 @@ public class EndlessMap : MonoBehaviour
 
         Vector3 spawnPos = new Vector3(0, 0, nextSpawnZ);
 
-        // Fix riêng cho Segment 3 (index = 2)
-        if (index == 2)
-        {
-            spawnPos.x = 0.1f;
-            spawnPos.y = -2.6f;
-            
-        }
-        if (index == 1)
-        {
-            spawnPos.y = 0.25f;
-            spawnPos.x = 0.14f;
-        }
-        if(index == 0)
-        {
-            spawnPos.x = 0.2f;
-        }
+
 
         GameObject seg = Instantiate(
             segmentPrefabs[index],
