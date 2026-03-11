@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections; // BẮT BUỘC PHẢI THÊM DÒNG NÀY ĐỂ DÙNG LỆNH CHỜ (IEnumerator)
 
 public class Character : MonoBehaviour
 {
@@ -18,17 +19,23 @@ public class Character : MonoBehaviour
     public float jumpForce = 7f;
     public float gravity = -20f;
 
-    // --- THÊM PHẦN BIẾN CHO BẢO VỆ ---
+    // --- THÊM PHẦN BIẾN LỘN VÒNG (ROLL) ---
+    [Header("Roll Settings")]
+    public float rollDuration = 0.8f; // Thời gian lộn vòng
+    private float originalHeight;
+    private Vector3 originalCenter;
+    private bool isRolling = false;
+    // ---------------------------------
+
     [Header("Chase & Death")]
-    public GameObject guardModel;    // Kéo thả ông bảo vệ (Pepsi) vào đây
-    public float chaseDuration = 5f; // Thời gian bảo vệ đuổi (5 giây)
-    
-    private int stumbleCount = 0;    // Số lần vấp ngã
-    private float chaseTimer = 0f;   // Bộ đếm thời gian
-    private bool isDead = false;     // Trạng thái sống chết
+    public GameObject guardModel;
+    public float chaseDuration = 5f;
+
+    private int stumbleCount = 0;
+    private float chaseTimer = 0f;
+    private bool isDead = false;
 
     private float hitCooldown = 0f;
-    // ---------------------------------
 
     private CharacterController controller;
     private Vector3 velocity;
@@ -46,16 +53,18 @@ public class Character : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetBool("IsGame", true); // Tên "IsGame" phải giống hệt bước 1
+            animator.SetBool("IsGame", true);
         }
 
-        // Đảm bảo lúc mới vào game ông bảo vệ bị ẩn đi
         if (guardModel != null) guardModel.SetActive(false);
+
+        // LƯU LẠI CHIỀU CAO GỐC LÚC MỚI VÀO GAME
+        originalHeight = controller.height;
+        originalCenter = controller.center;
     }
 
     void Update()
     {
-        // NẾU CHẾT RỒI THÌ DỪNG MỌI HOẠT ĐỘNG
         if (isDead) return;
 
         if (hitCooldown > 0) hitCooldown -= Time.deltaTime;
@@ -67,8 +76,8 @@ public class Character : MonoBehaviour
 
         HandleLaneChange();
         HandleJump();
+        HandleRoll(); // GỌI HÀM LỘN VÒNG
 
-        // ⏱ tăng speed mỗi 5s
         speedTimer += Time.deltaTime;
         if (speedTimer >= speedIncreaseInterval)
         {
@@ -78,34 +87,30 @@ public class Character : MonoBehaviour
 
         Vector3 move = Vector3.forward * currentSpeed;
 
-        // lane movement
         float targetX = centerX + (currentLane - 1) * laneDistance;
         float diff = targetX - transform.position.x;
         move.x = diff * laneChangeSpeed;
 
         controller.Move(move * Time.deltaTime);
 
-        // gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        // --- LOGIC BẢO VỆ ĐUỔI ---
         if (stumbleCount == 1)
         {
-            chaseTimer -= Time.deltaTime; // Trừ dần 5 giây
+            chaseTimer -= Time.deltaTime;
             if (chaseTimer <= 0)
             {
-                stumbleCount = 0; // Hết giờ -> Thoát nạn
-                if (guardModel != null) guardModel.SetActive(false); // Ẩn bảo vệ
+                stumbleCount = 0;
+                if (guardModel != null) guardModel.SetActive(false);
                 Debug.Log("Cắt đuôi thành công! An toàn!");
             }
         }
 
-        // --- NÚT T ĐỂ TEST CHẾT ---
         if (Input.GetKeyDown(KeyCode.T))
         {
             Debug.Log("💀 Test Death bằng nút T!");
-            Die(); // Đã gom code của Hải xuống hàm Die() ở dưới cho gọn
+            Die();
         }
     }
 
@@ -129,6 +134,9 @@ public class Character : MonoBehaviour
                     currentLane--;
                 else if (touch.deltaPosition.y > 50 && isGrounded)
                     velocity.y = jumpForce;
+                // THÊM: VUỐT XUỐNG ĐỂ LỘN VÒNG
+                else if (touch.deltaPosition.y < -50 && !isRolling)
+                    StartCoroutine(RollRoutine());
             }
         }
     }
@@ -141,15 +149,46 @@ public class Character : MonoBehaviour
         }
     }
 
-    // --- THÊM HÀM XỬ LÝ VA CHẠM THỰC TẾ ---
+    // HÀM BẮT PHÍM LỘN VÒNG
+    void HandleRoll()
+    {
+        if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) && !isRolling)
+        {
+            StartCoroutine(RollRoutine());
+        }
+    }
+
+    // HÀM ÉP LÙN VA CHẠM (COROUTINE)
+    private IEnumerator RollRoutine()
+    {
+        isRolling = true;
+
+        // Gọi Animation lộn vòng
+        if (animator != null)
+        {
+            animator.SetTrigger("Roll");
+        }
+
+        // Ép lùn chiều cao xuống 1 nửa
+        controller.height = originalHeight / 6f;
+        controller.center = new Vector3(originalCenter.x, originalCenter.y / 6f, originalCenter.z);
+
+        // Đợi bằng đúng thời gian cuộn
+        yield return new WaitForSeconds(rollDuration);
+
+        // Đứng dậy, trả lại chiều cao như cũ
+        controller.height = originalHeight;
+        controller.center = originalCenter;
+
+        isRolling = false;
+    }
+
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (isDead) return;
 
         if (hit.gameObject.CompareTag("Train"))
         {
-            // hit.normal.z < -0.5 tức là bề mặt va chạm đang đẩy ngược lại phía sau 
-            // -> Chứng tỏ Hải đang đâm trực diện vào mặt trước của tàu
             if (hit.normal.z < -0.5f)
             {
                 Debug.Log("💥 Đâm mặt trước Tàu hỏa! Chết ngay!");
@@ -157,7 +196,6 @@ public class Character : MonoBehaviour
             }
             else
             {
-                // Nếu không phải mặt trước thì là quẹt mạn sườn -> Bị bảo vệ đuổi
                 HitObstacle();
             }
         }
@@ -170,10 +208,9 @@ public class Character : MonoBehaviour
 
     void HitObstacle()
     {
-        // Nếu vừa mới vấp xong, đang trong thời gian chờ thì không tính thêm nữa
         if (hitCooldown > 0) return;
 
-        hitCooldown = 0.5f; // Khóa va chạm trong 0.5 giây tiếp theo để không bị x2 số lần vấp
+        hitCooldown = 0.5f;
 
         stumbleCount++;
 
@@ -190,23 +227,22 @@ public class Character : MonoBehaviour
         }
     }
 
-    // Hàm Die được gom lại từ code cũ của Hải
     void Die()
     {
         isDead = true;
-        this.enabled = false;      // Dừng nhân vật
-        
-        if (animator != null) animator.enabled = false; // Tắt animation
-        if (guardModel != null) guardModel.SetActive(false); // Ẩn luôn ông bảo vệ cho gọn
+        this.enabled = false;
+
+        if (animator != null) animator.enabled = false;
+        if (guardModel != null) guardModel.SetActive(false);
 
         GameUIController ui = UnityEngine.Object.FindFirstObjectByType<GameUIController>();
         if (ui != null)
         {
             int currentScore = ScoreManager.instance != null ? ScoreManager.instance.score : 0;
             int currentCoins = ScoreManager.instance != null ? ScoreManager.instance.coins : 0;
-            ui.ShowDeathMenu(currentScore, currentCoins); // Hiện bảng điểm thật
+            ui.ShowDeathMenu(currentScore, currentCoins);
         }
-        else 
+        else
         {
             Debug.LogWarning("Không tìm thấy GameUIController trong Scene!");
         }
