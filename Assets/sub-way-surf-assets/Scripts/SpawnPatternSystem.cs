@@ -8,7 +8,7 @@ public class SpawnPatternSystem : MonoBehaviour
     public GameObject barrierHighPrefab; // Loại phải chui qua
     public GameObject tunnelPrefab;      // Hầm (thường chiếm cả lane)
     [Header("Settings")]
-    public float centerX = 0f;// là 0 nếu model đã căn giữa, hoặc điều chỉnh lại
+    public float centerX = 0f;
     public float laneDistance = 2.04f;
     public float trainHeight = -0.35f;
     public float coinHeight = 0.75f;
@@ -61,7 +61,7 @@ public class SpawnPatternSystem : MonoBehaviour
                 // Ta cho xu xuất hiện ở lane 2 để khớp với vị trí hầm
                 for (int i = 0; i < 3; i++)
                 {
-                    SpawnCoin(2, zLocal + (i * 2f));
+                    SpawnCoin(0, zLocal + (i * 2f));
                 }
                 break;
 

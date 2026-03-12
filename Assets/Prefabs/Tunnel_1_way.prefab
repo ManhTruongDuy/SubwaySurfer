@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5886849670196453446}
   m_Layer: 0
   m_Name: Tunnel_1_way
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

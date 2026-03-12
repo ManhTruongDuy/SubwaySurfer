@@ -204,6 +204,14 @@ public class Character : MonoBehaviour
             HitObstacle();
             hit.collider.enabled = false;
         }
+        
+        
+        if (hit.gameObject.CompareTag("Tunnel"))
+        {
+
+                Debug.Log("💥 Đâm đầu vào Hầm chui! Chết ngay!");
+                Die();            
+        }
     }
 
     void HitObstacle()

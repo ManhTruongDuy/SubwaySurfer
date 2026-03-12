@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Train
   - Obstacle
+  - Tunnel
   layers:
   - Default
   - TransparentFX
