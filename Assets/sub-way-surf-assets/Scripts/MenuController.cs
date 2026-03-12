@@ -26,12 +26,12 @@ public class MenuController : MonoBehaviour
     public GameObject btnDoubleUp;
 
     [Header("Audio Settings UI")]
-    public Slider musicSlider;       // Thanh kéo to nhỏ
-    public Image musicIconDisplay;   // Ảnh nút nhạc
-    public Sprite musicOnSprite;     // Hình nốt nhạc đẹp
-    public Sprite musicOffSprite;    // Hình nốt nhạc tắt
+    public Slider musicSlider;       
+    public Image musicIconDisplay;   
+    public Sprite musicOnSprite;     
+    public Sprite musicOffSprite;    
 
-    // Nếu Hải muốn làm cả nút Sound (Tiếng động FX) thì giữ lại, không thì xóa
+    
     public Image soundIconDisplay;
     public Sprite soundOnSprite;
     public Sprite soundOffSprite;
@@ -39,20 +39,17 @@ public class MenuController : MonoBehaviour
     [Header("Transition")]
     public Animator cloudAnimator;
 
-    // --- MỚI THÊM: HIỂN THỊ NHÂN VẬT Ở MENU ---
+    
     [Header("Character Display")]
-    public Transform characterSpawnPoint;    // Kéo cái vị trí đứng vào đây
-    public GameObject[] allCharacterPrefabs; // Kéo danh sách các Prefab nhân vật vào đây
+    public Transform characterSpawnPoint;
+    public GameObject[] allCharacterPrefabs;
     private GameObject currentCharacterModel;
 
     private int coinsCollectedInRun;
 
     void Start()
     {
-        // 1. Cập nhật Tiền
         UpdateTotalCurrencyUI();
-
-        // 2. Cập nhật UI Âm thanh theo trạng thái của MusicManager
         if (MusicManager.Instance != null)
         {
             if (musicSlider != null)
@@ -63,7 +60,6 @@ public class MenuController : MonoBehaviour
             UpdateMusicIconUI();
         }
 
-        // 3. --- MỚI THÊM: LOAD NHÂN VẬT ĐANG CHỌN ---
         LoadSelectedCharacter();
     }
 
@@ -73,31 +69,24 @@ public class MenuController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)) PlayGame();
         if (Input.GetKeyDown(KeyCode.Escape)) QuitGame();
 
-        // Cheat tiền test shop
+        // Cheat tiền test
         if (Input.GetKeyDown(KeyCode.P))
         {
             PlayerDataManager.Instance.AddDiamonds(100);
             UpdateTotalCurrencyUI();
         }
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Debug.Log("Test Death Menu!");
-            // Gọi hàm hiện bảng với số liệu giả (Điểm 1234, Tiền 555)
-            ShowDeathMenu(1234, 555);
-        }
+
     }
 
-    // --- HÀM MỚI: TÌM VÀ HIỂN THỊ NHÂN VẬT ---
+    
     public void LoadSelectedCharacter()
     {
-        // Lấy tên nhân vật đang được chọn trong Data
         string selectedName = PlayerDataManager.Instance.GetSelectedCharacter();
 
-        // Tìm xem có Prefab nào trùng tên không
         GameObject prefabToSpawn = null;
         foreach (var prefab in allCharacterPrefabs)
         {
-            // Quan trọng: Tên Prefab phải giống hệt tên trong Data (Tricky, Dino...)
+            //Tên Prefab phải giống hệt tên trong Data
             if (prefab.name == selectedName)
             {
                 prefabToSpawn = prefab;
@@ -105,22 +94,16 @@ public class MenuController : MonoBehaviour
             }
         }
 
-        // Nếu tìm thấy thì tạo ra
         if (prefabToSpawn != null && characterSpawnPoint != null)
         {
-            // Xóa con cũ đi (nếu có)
             if (currentCharacterModel != null) Destroy(currentCharacterModel);
 
-            // Tạo con mới tại vị trí SpawnPoint
             currentCharacterModel = Instantiate(prefabToSpawn, characterSpawnPoint.position, characterSpawnPoint.rotation);
 
-            // Gán làm con của SpawnPoint cho gọn gàng
             currentCharacterModel.transform.SetParent(characterSpawnPoint);
         }
     }
-    // ------------------------------------------
-
-    // --- CÁC HÀM XỬ LÝ ÂM THANH (GỌI SANG MUSIC MANAGER) ---
+   
     public void OnMusicToggleClick()
     {
         if (MusicManager.Instance != null)
@@ -146,7 +129,6 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    // --- CÁC HÀM LOGIC GAME KHÁC ---
     public void ShowDeathMenu(int score, int coins)
     {
         coinsCollectedInRun = coins;
@@ -164,20 +146,6 @@ public class MenuController : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    public void WatchAdDoubleCoin()
-    {
-        StartCoroutine(SimulateAdRoutine());
-    }
-
-    IEnumerator SimulateAdRoutine()
-    {
-        Debug.Log("Đang xem quảng cáo...");
-        yield return new WaitForSecondsRealtime(2.0f);
-        PlayerDataManager.Instance.AddCoins(coinsCollectedInRun);
-        txtRunCoin.text = (coinsCollectedInRun * 2).ToString();
-        UpdateTotalCurrencyUI();
-        if (btnDoubleUp != null) btnDoubleUp.SetActive(false);
-    }
 
     public void UpdateTotalCurrencyUI()
     {
